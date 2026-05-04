@@ -1,5 +1,45 @@
-here student can see their compatibility scores with other students based on the preferences they entered in the dashboard.
- The scores will be calculated using a compatibility algorithm that takes into account the attributes stored in the database.
-  The scores will be displayed in a user-friendly format, allowing students to easily compare their compatibility with different roommates. 
-  The design of the score page will be simple and clean, with a focus on the compatibility scores and the attributes that contribute to those scores.
-   There will also be a link to the dashboard for students to update their preferences if they want to improve their compatibility scores.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compatibility Scores - Roommate Matching System</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        .match { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; margin: 10px; }
+        button:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Your Top Matches</h2>
+        <div id="matches"></div>
+        <button onclick="window.location.href='dashboard.html'">Update Preferences</button>
+        <button onclick="window.location.href='final-allotment.html'">View Allotment</button>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = 'login.html';
+        }
+
+        async function loadMatches() {
+            try {
+                const response = await fetch(`/api/matches/${user.id}`);
+                const matches = await response.json();
+                const matchesDiv = document.getElementById('matches');
+                matchesDiv.innerHTML = matches.map(match => 
+                    `<div class="match"><strong>${match.name}</strong> - Score: ${match.score}</div>`
+                ).join('');
+            } catch (error) {
+                document.getElementById('matches').textContent = 'Error loading matches';
+            }
+        }
+
+        loadMatches();
+    </script>
+</body>
+</html>

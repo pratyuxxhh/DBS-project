@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Blocks Allotment - Roommate Matching System</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f8fafc; }
+        .container { max-width: 1200px; margin: auto; }
+        .search-sort { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+        input, select { padding: 10px; border: 1px solid #d1d5db; border-radius: 4px; }
+        .search-sort input { flex: 1; min-width: 220px; }
+        .blocks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+        .block-column { display: flex; flex-direction: column; gap: 15px; }
+        .block-title { font-size: 1.25rem; margin: 0 0 10px; color: #1f2937; border-bottom: 2px solid #3b82f6; padding-bottom: 5px; }
+        .block-cards { display: grid; gap: 15px; }
+        .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card-header { font-weight: bold; color: #1f2937; margin-bottom: 10px; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px; }
+        .occupants { list-style: none; padding: 0; }
+        .occupants li { padding: 5px 0; }
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        .pagination button { padding: 10px 15px; border: 1px solid #d1d5db; background: #fff; cursor: pointer; border-radius: 4px; }
+        .pagination button.active { background: #3b82f6; color: #fff; }
+        .no-data { text-align: center; padding: 50px; color: #6b7280; }
+        @media (max-width: 1100px) {
+            .blocks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 700px) {
+            .blocks { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>All Blocks Room Allotment</h1>
+        <div class="search-sort">
+            <input type="text" id="search" placeholder="Search by block or room number">
+            <select id="sort">
+                <option value="block">Sort by Block</option>
+                <option value="room">Sort by Room Number</option>
+            </select>
+        </div>
+        <div id="roomsGrid" class="blocks">
+            <!-- Block columns will be inserted here -->
+        </div>
+        <div id="pagination" class="pagination">
+            <!-- Pagination buttons will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        let allRooms = [];
+        let filteredRooms = [];
+
+        async function loadAllotments() {
+            try {
+                const response = await fetch('/api/allotments');
+                if (response.ok) {
+                    allRooms = await response.json();
+                    filteredRooms = [...allRooms];
+                    renderRooms();
+                } else {
+                    document.getElementById('roomsGrid').innerHTML = '<div class="no-data">No allotment data available.</div>';
+                }
+            } catch (error) {
+                console.error('Error loading allotments:', error);
+                document.getElementById('roomsGrid').innerHTML = '<div class="no-data">Error loading data.</div>';
+            }
+        }
+
+        function renderRooms() {
+            const grid = document.getElementById('roomsGrid');
+            const blocks = ['Block A', 'Block B', 'Block C'];
+            const roomGroups = {
+                'block a': [],
+                'block b': [],
+                'block c': []
+            };
+
+            filteredRooms.forEach(room => {
+                const key = room.block ? room.block.toLowerCase() : '';
+                if (roomGroups[key]) {
+                    roomGroups[key].push(room);
+                }
+            });
+
+            const blockColumns = blocks.map(block => {
+                const rooms = roomGroups[block.toLowerCase()].sort((a, b) => a.room_number.localeCompare(b.room_number));
+                const cards = rooms.length > 0 ? rooms.map(room => `
+                    <div class="card">
+                        <div class="card-header">Room ${room.room_number}</div>
+                        <ul class="occupants">
+                            ${room.occupants.length > 0 ? room.occupants.map(name => `<li>${name}</li>`).join('') : '<li>No occupants</li>'}
+                        </ul>
+                    </div>
+                `).join('') : '<div class="no-data">No rooms found for this block.</div>';
+
+                return `
+                    <div class="block-column">
+                        <h2 class="block-title">${block}</h2>
+                        <div class="block-cards">${cards}</div>
+                    </div>
+                `;
+            }).join('');
+
+            grid.innerHTML = blockColumns;
+            document.getElementById('pagination').innerHTML = '';
+        }
+
+        function filterAndSortRooms() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+
+            filteredRooms = allRooms.filter(room =>
+                room.block.toLowerCase().includes(searchTerm) ||
+                room.room_number.toLowerCase().includes(searchTerm)
+            );
+
+            renderRooms();
+        }
+
+        document.getElementById('search').addEventListener('input', filterAndSortRooms);
+        document.getElementById('sort').addEventListener('change', filterAndSortRooms);
+
+        loadAllotments();
+    </script>
+</body>
+</html>

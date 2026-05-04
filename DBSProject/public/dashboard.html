@@ -1,13 +1,262 @@
-here students can enter their preferences for the roommates 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Roommate Matching System</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f8fafc; }
+        .container { max-width: 700px; margin: auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; }
+        .user-info { margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        input, select, textarea, button { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; border: 1px solid #d1d5db; border-radius: 4px; }
+        textarea { font-family: Arial, sans-serif; resize: vertical; }
+        button { background: #16a34a; border: none; color: #fff; cursor: pointer; border-radius: 6px; margin-top: 10px; }
+        button:hover { background: #15803d; }
+        .full { grid-column: 1 / -1; }
+        .nav-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .nav-buttons button { flex: 1; }
+        .message { margin-top: 10px; padding: 10px; border-radius: 4px; }
+        .error { background: #fee2e2; color: #dc2626; }
+        .success { background: #dcfce7; color: #166534; }
+        h4 { margin-top: 20px; margin-bottom: 10px; color: #1f2937; border-bottom: 2px solid #3b82f6; padding-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="user-info">
+            <h2>Welcome, <span id="userName"></span></h2>
+        </div>
+        <h3>Your Roommate Preferences</h3>
+        <form id="preferencesForm">
+            <h4>Section 1: Basic Living Preferences</h4>
+            <div class="grid">
+                <select id="hostel_block" required>
+                    <option value="">Select Hostel Block</option>
+                    <option value="BLOCK A">BLOCK A</option>
+                    <option value="BLOCK B">BLOCK B</option>
+                    <option value="BLOCK C">BLOCK C</option>
+                </select>
+                
+                <select id="sleep_time" required>
+                    <option value="">Sleep Schedule</option>
+                    <option value="very_early">Very Early (9 PM - 10 PM)</option>
+                    <option value="early">Early (10 PM - 11 PM)</option>
+                    <option value="moderate">Moderate (11 PM - 12 AM)</option>
+                    <option value="late">Late (12 AM - 1 AM)</option>
+                    <option value="very_late">Very Late (1 AM - 2 AM)</option>
+                </select>
+                <select id="study_habit" required>
+                    <option value="">Study Habit</option>
+                    <option value="silent">Silent/Solo Study</option>
+                    <option value="quiet">Quiet Study</option>
+                    <option value="mix">Mixed (Silent & Group)</option>
+                    <option value="group">Group Study</option>
+                    <option value="collaborative">Highly Collaborative</option>
+                </select>
+                <select id="cleanliness" required>
+                    <option value="">Cleanliness</option>
+                    <option value="very_neat">Very Neat</option>
+                    <option value="neat">Neat</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="messy">Messy</option>
+                    <option value="very_messy">Very Messy</option>
+                </select>
+                <select id="smoking" required>
+                    <option value="">Smoking</option>
+                    <option value="daily">Yes, Daily</option>
+                    <option value="social">Social/Occasional</option>
+                    <option value="no">No</option>
+                    <option value="no_preference">Don't Care</option>
+                    <option value="must_not">Absolutely Must Not</option>
+                </select>
+            </div>
 
-Each student inputs structured preferences:
+            <h4>Section 2: Lifestyle & Social Preferences</h4>
+            <div class="grid">
+                <select id="guest_freq" required>
+                    <option value="">Guest Frequency</option>
+                    <option value="never">Never</option>
+                    <option value="rarely">Rarely (Few times a year)</option>
+                    <option value="occasionally">Occasionally (Monthly)</option>
+                    <option value="often">Often (Weekly)</option>
+                    <option value="very_often">Very Often (Multiple times weekly)</option>
+                </select>
+                <select id="atheism">
+                    <option value="">Atheism Preference</option>
+                    <option value="yes">Yes</option>
+                    <option value="agnostic">Agnostic</option>
+                    <option value="neutral">Neutral/Undecided</option>
+                    <option value="spiritual">Spiritual</option>
+                    <option value="prefer_not_say">Prefer Not to Say</option>
+                </select>
+                <select id="vegetarian">
+                    <option value="">Vegetarian Preference</option>
+                    <option value="vegan">Vegan</option>
+                    <option value="vegetarian">Vegetarian</option>
+                    <option value="mostly_veg">Mostly Vegetarian</option>
+                    <option value="no_preference">No Preference</option>
+                    <option value="meat_eater">Meat Eater</option>
+                </select>
+                <select id="introvert">
+                    <option value="">Introvert/Extrovert</option>
+                    <option value="introvert">Introvert</option>
+                    <option value="shy_introvert">Shy/Reserved</option>
+                    <option value="ambivert">Ambivert (Balanced)</option>
+                    <option value="extrovert">Extrovert</option>
+                    <option value="social_butterfly">Very Social</option>
+                </select>
+                <textarea id="habits" placeholder="Other habits/preferences" rows="3"></textarea>
+            </div>
+            <button type="submit" id="savePreferencesBtn">Save Preferences</button>
+        </form>
+        <p id="message" class="message"></p>
+        <div class="nav-buttons">
+            <button onclick="window.location.href='score.html'">View Matches</button>
+            <button onclick="window.location.href='final-allotment.html'">View Your Allotment</button>
+            <button type="button" id="viewAllBlocksBtn">View All Blocks Allotment</button>
+        </div>
+    </div>
 
-Sleep schedule (early / late)
-Study habits (silent / music)
-Cleanliness level (low / medium / high)
-Smoking / drinking (yes/no)
-Guest frequency
-Noise tolerance
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('userName').textContent = user.name;
+        }
+        
+        // Load existing preferences if available
+        async function loadPreferences() {
+            try {
+                const response = await fetch(`/api/preferences/${user.id}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const prefs = data.preferences;
+                    if (prefs) {
+                        document.getElementById('hostel_block').value = prefs.hostel_block || '';
+                        document.getElementById('sleep_time').value = prefs.sleep_time || '';
+                        document.getElementById('study_habit').value = prefs.study_habit || '';
+                        document.getElementById('cleanliness').value = prefs.cleanliness || '';
+                        document.getElementById('smoking').value = prefs.smoking || '';
+                        document.getElementById('guest_freq').value = prefs.guest_freq || '';
+                        document.getElementById('atheism').value = prefs.atheism || '';
+                        document.getElementById('habits').value = prefs.habits || '';
+                        document.getElementById('vegetarian').value = prefs.vegetarian || '';
+                        document.getElementById('introvert').value = prefs.introvert || '';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading preferences:', error);
+            }
+        }
+        
+        loadPreferences();
 
-👉 Store these as attributes in DB (not text blobs)
-👉 Use these attributes to calculate compatibility scores between students
+        async function refreshRoomAllotment() {
+            const messageEl = document.getElementById('message');
+            const button = document.getElementById('viewAllBlocksBtn');
+            button.disabled = true;
+            button.textContent = 'Refreshing allotment...';
+            messageEl.classList.remove('error', 'success');
+            messageEl.textContent = '';
+
+            try {
+                const response = await fetch(`/api/update-matches/${user.id}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = 'all-blocks-allotment.html';
+                } else {
+                    messageEl.classList.add('error');
+                    messageEl.textContent = data.error || data.message || 'Failed to refresh room allotment.';
+                    button.disabled = false;
+                    button.textContent = 'View All Blocks Allotment';
+                }
+            } catch (error) {
+                messageEl.classList.add('error');
+                messageEl.textContent = 'An error occurred while refreshing room allotment.';
+                button.disabled = false;
+                button.textContent = 'View All Blocks Allotment';
+            }
+        }
+
+        document.getElementById('viewAllBlocksBtn').addEventListener('click', refreshRoomAllotment);
+
+        document.getElementById('preferencesForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageEl = document.getElementById('message');
+            const button = document.getElementById('savePreferencesBtn');
+            button.disabled = true;
+            
+            const preferences = {
+                user_id: user.id,
+                hostel_block: document.getElementById('hostel_block').value.trim(),
+                sleep_time: document.getElementById('sleep_time').value,
+                study_habit: document.getElementById('study_habit').value,
+                cleanliness: document.getElementById('cleanliness').value,
+                smoking: document.getElementById('smoking').value,
+                guest_freq: document.getElementById('guest_freq').value,
+                atheism: document.getElementById('atheism').value,
+                habits: document.getElementById('habits').value.trim(),
+                vegetarian: document.getElementById('vegetarian').value,
+                introvert: document.getElementById('introvert').value
+            };
+
+            try {
+                const response = await fetch('/api/preferences', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(preferences)
+                });
+                const data = await response.json();
+                
+                messageEl.classList.remove('error', 'success');
+                if (response.ok) {
+                    messageEl.classList.add('success');
+                    messageEl.textContent = 'Preferences saved. Updating your room allotment...';
+                    
+                    // Now update matches and reassign room
+                    try {
+                        const updateResponse = await fetch(`/api/update-matches/${user.id}`, {
+                            method: 'POST'
+                        });
+                        const updateData = await updateResponse.json();
+
+                        messageEl.classList.remove('success', 'error');
+                        if (updateResponse.ok) {
+                            if (updateData.updated) {
+                                messageEl.classList.add('success');
+                                messageEl.textContent = `Room reassignment successful! Moved from ${updateData.previousRoom} to ${updateData.newRoom}. New compatibility score: ${updateData.newScore}`;
+                            } else {
+                                messageEl.classList.add('success');
+                                messageEl.textContent = `Preferences updated successfully! ${updateData.message || ''}`;
+                                if (updateData.currentRoom) {
+                                    messageEl.textContent += ` (Current room: ${updateData.currentRoom}, Score: ${updateData.currentScore})`;
+                                }
+                            }
+                        } else {
+                            messageEl.classList.add('error');
+                            messageEl.textContent = updateData.error || updateData.message || 'Failed to update room allotment';
+                        }
+                    } catch (updateError) {
+                        messageEl.classList.add('error');
+                        messageEl.textContent = 'Preferences saved but failed to update room allotment';
+                    }
+                } else {
+                    messageEl.classList.add('error');
+                    messageEl.textContent = data.error || data.message || 'Failed to save preferences';
+                }
+            } catch (error) {
+                messageEl.classList.remove('success');
+                messageEl.classList.add('error');
+                messageEl.textContent = 'An error occurred while saving preferences';
+            } finally {
+                button.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

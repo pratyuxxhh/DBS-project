@@ -1,1 +1,53 @@
-here user will see their final allotment of roommates based on the compatibility scores and preferences they entered in the dashboard. The allotment will be displayed in a user-friendly format, showing the names and attributes of the assigned roommates. The design of the allotment page will be simple and clean, with a focus on the final allotment and the attributes that contributed to the allotment. There will also be a link to the dashboard for students to update their preferences if they want to improve their chances of getting a better roommate in the future.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Allotment - Roommate Matching System</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        .allotment { border: 1px solid #ddd; padding: 20px; margin: 20px 0; }
+        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; margin: 10px; }
+        button:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Your Final Roommate Allotment</h2>
+        <div id="allotment" class="allotment">
+            <!-- Allotment details will be loaded here -->
+        </div>
+        <button onclick="window.location.href='dashboard.html'">Update Preferences</button>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = 'login.html';
+        }
+
+        async function loadAllotment() {
+            try {
+                const response = await fetch(`/api/matches/${user.id}`);
+                const matches = await response.json();
+                if (matches.length > 0) {
+                    const topMatch = matches[0];
+                    document.getElementById('allotment').innerHTML = `
+                        <h3>Your Assigned Roommate:</h3>
+                        <p><strong>Name:</strong> ${topMatch.name}</p>
+                        <p><strong>Compatibility Score:</strong> ${topMatch.score}</p>
+                        <p>Based on your preferences, this is your best match!</p>
+                    `;
+                } else {
+                    document.getElementById('allotment').textContent = 'No allotment available. Please set your preferences first.';
+                }
+            } catch (error) {
+                document.getElementById('allotment').textContent = 'Error loading allotment';
+            }
+        }
+
+        loadAllotment();
+    </script>
+</body>
+</html>
